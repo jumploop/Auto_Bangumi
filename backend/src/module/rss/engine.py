@@ -26,10 +26,7 @@ class RSSEngine(Database):
 
     def get_rss_torrents(self, rss_id: int) -> list[Torrent]:
         rss = self.rss.search_id(rss_id)
-        if rss:
-            return self.torrent.search_rss(rss_id)
-        else:
-            return []
+        return self.torrent.search_rss(rss_id) if rss else []
 
     def add_rss(
         self,
@@ -96,8 +93,7 @@ class RSSEngine(Database):
 
     def pull_rss(self, rss_item: RSSItem) -> list[Torrent]:
         torrents = self._get_torrents(rss_item)
-        new_torrents = self.torrent.check_new(torrents)
-        return new_torrents
+        return self.torrent.check_new(torrents)
 
     def match_torrent(self, torrent: Torrent) -> Optional[Bangumi]:
         matched: Bangumi = self.bangumi.match_torrent(torrent.name)
@@ -122,14 +118,16 @@ class RSSEngine(Database):
         for rss_item in rss_items:
             new_torrents = self.pull_rss(rss_item)
             # Get all enabled bangumi data
+            add_torrents = []
             for torrent in new_torrents:
                 matched_data = self.match_torrent(torrent)
                 if matched_data:
                     if client.add_torrent(torrent, matched_data):
                         logger.debug(f"[Engine] Add torrent {torrent.name} to client")
-                    torrent.downloaded = True
+                        torrent.downloaded = True
+                        add_torrents.append(torrent)
             # Add all torrents to database
-            self.torrent.add_all(new_torrents)
+            self.torrent.add_all(add_torrents)
 
     def download_bangumi(self, bangumi: Bangumi):
         with RequestContent() as req:
