@@ -46,8 +46,7 @@ class SearchTorrent(RequestContent, RSSAnalyser):
     @staticmethod
     def special_url(data: Bangumi, site: str) -> RSSItem:
         keywords = [getattr(data, key) for key in SEARCH_KEY if getattr(data, key)]
-        url = search_url(site, keywords)
-        return url
+        return search_url(site, keywords)
 
     def search_season(self, data: Bangumi, site: str = "mikan") -> list[Torrent]:
         rss_item = self.special_url(data, site)

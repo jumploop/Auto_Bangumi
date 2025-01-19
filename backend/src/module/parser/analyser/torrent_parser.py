@@ -38,12 +38,9 @@ def get_group(group_and_title) -> tuple[str | None, str]:
     n = re.split(r"[\[\]()【】（）]", group_and_title)
     while "" in n:
         n.remove("")
-    if len(n) > 1:
-        if re.match(r"\d+", n[1]):
-            return None, group_and_title
-        return n[0], n[1]
-    else:
+    if len(n) <= 1:
         return None, n[0]
+    return (None, group_and_title) if re.match(r"\d+", n[1]) else (n[0], n[1])
 
 
 def get_season_and_title(season_and_title) -> tuple[str, int]:
@@ -52,7 +49,8 @@ def get_season_and_title(season_and_title) -> tuple[str, int]:
         season = re.search(r"([Ss]|Season )(\d{1,3})", season_and_title, re.I).group(2)
     except AttributeError:
         season = 1
-    return title, int(season)
+    logger.info(f"title: {title}, season: {season}")
+    return title, season
 
 
 def get_subtitle_lang(subtitle_name: str) -> str:
@@ -73,6 +71,7 @@ def torrent_parser(
     if torrent_name is None:
         match_names = match_names[1:]
     for match_name in match_names:
+        logger.info(f"match_name: {match_name}")
         for rule in RULES:
             match_obj = re.match(rule, match_name, re.I)
             if match_obj:

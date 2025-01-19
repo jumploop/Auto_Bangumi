@@ -65,15 +65,14 @@ class Renamer(DownloadClient):
         )
         if ep:
             new_path = self.gen_path(ep, bangumi_name, method=method)
-            if media_path != new_path and new_path not in self.check_pool.keys():
-                if self.rename_torrent_file(
+            if media_path != new_path and new_path not in self.check_pool.keys() and self.rename_torrent_file(
                     _hash=_hash, old_path=media_path, new_path=new_path
-                ):
-                    return Notification(
-                        official_title=bangumi_name,
-                        season=ep.season,
-                        episode=ep.episode,
-                    )
+            ):
+                return Notification(
+                    official_title=bangumi_name,
+                    season=ep.season,
+                    episode=ep.episode,
+                )
         else:
             logger.warning(f"[Renamer] {media_path} parse failed")
             if settings.bangumi_manage.remove_bad_torrent:

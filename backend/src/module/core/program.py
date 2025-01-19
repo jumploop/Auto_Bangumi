@@ -40,15 +40,16 @@ class Program(RenameThread, RSSThread):
 
     async def startup(self):
         self.__start_info()
-        if not self.database:
-            first_run()
-            logger.info("[Core] No db file exists, create database file.")
-            return {"status": "First run detected."}
-        if self.legacy_data:
-            logger.info(
-                "[Core] Legacy data detected, starting data migration, please wait patiently."
-            )
-            data_migration()
+        if not self.database or self.legacy_data:
+            if not self.database:
+                first_run()
+                logger.info("[Core] No db file exists, create database file.")
+                return {"status": "First run detected."}
+            elif self.legacy_data:
+                logger.info(
+                    "[Core] Legacy data detected, starting data migration, please wait patiently."
+                )
+                data_migration()
         elif self.version_update:
             # Update database
             from_30_to_31()

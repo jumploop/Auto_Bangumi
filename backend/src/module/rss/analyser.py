@@ -42,9 +42,12 @@ class RSSAnalyser(TitleParser):
     def torrents_to_data(
         self, torrents: list[Torrent], rss: RSSItem, full_parse: bool = True
     ) -> list:
+        logger.info(f"[RSS] Parsing RSS: {rss.url}, full_parse: {full_parse}")
         new_data = []
         for torrent in torrents:
+            logger.info(f"[RSS] Analysing torrent: {torrent.name}")
             bangumi = self.raw_parser(raw=torrent.name)
+            logger.info(f"[RSS] Torrent: {torrent.name} -> Bangumi: {bangumi}")
             if bangumi and bangumi.title_raw not in [i.title_raw for i in new_data]:
                 self.official_title_parser(bangumi=bangumi, rss=rss, torrent=torrent)
                 if not full_parse:
@@ -64,6 +67,7 @@ class RSSAnalyser(TitleParser):
         self, rss: RSSItem, engine: RSSEngine, full_parse: bool = True
     ) -> list[Bangumi]:
         rss_torrents = self.get_rss_torrents(rss.url, full_parse)
+        logger.info(f"[RSS] {len(rss_torrents)} torrents found.")
         torrents_to_add = engine.bangumi.match_list(rss_torrents, rss.url)
         if not torrents_to_add:
             logger.debug("[RSS] No new title has been found.")
@@ -78,7 +82,9 @@ class RSSAnalyser(TitleParser):
             return []
 
     def link_to_data(self, rss: RSSItem) -> Bangumi | ResponseModel:
+        logger.info(f"[RSS] Analysing link: {rss.url}")
         torrents = self.get_rss_torrents(rss.url, False)
+        logger.info(f"[RSS] {len(torrents)} torrents found.")
         if not torrents:
             return ResponseModel(
                 status=False,
@@ -87,8 +93,13 @@ class RSSAnalyser(TitleParser):
                 msg_zh="无法找到种子。",
             )
         for torrent in torrents:
+            logger.info(f"[RSS] Analysing torrent: {torrent.name}")
             data = self.torrent_to_data(torrent, rss)
+            logger.info(
+                f"[RSS] Torrent: {torrent.name} -> Bangumi: {data.official_title}"
+            )
             if data:
+                logger.info(f"[RSS] New bangumi founded: {data}")
                 return data
         return ResponseModel(
             status=False,
@@ -96,4 +107,3 @@ class RSSAnalyser(TitleParser):
             msg_en="Cannot parse this link.",
             msg_zh="无法解析此链接。",
         )
-
