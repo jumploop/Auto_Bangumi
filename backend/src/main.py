@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, Request
@@ -51,12 +52,16 @@ if VERSION != "DEV_VERSION":
 
     @app.get("/{path:path}")
     def html(request: Request, path: str):
-        files = os.listdir("dist")
-        if path in files:
-            return FileResponse(f"dist/{path}")
+        # 尝试直接返回文件
+        file_path = Path("dist") / path
+        if file_path.is_file():
+            return FileResponse(file_path)
+        # 如果文件不存在，返回 index.html
         context = {"request": request}
         return templates.TemplateResponse("index.html", context)
+
 else:
+
     @app.get("/", status_code=302, tags=["html"])
     def index():
         return RedirectResponse("/docs")
@@ -64,6 +69,8 @@ else:
 
 if __name__ == "__main__":
     host = "::" if os.getenv("IPV6") else os.getenv("HOST", "0.0.0.0")
+    # 记录 Web 服务器启动信息
+    logger.info(f"Starting Web server on {host}:{settings.program.webui_port}")
     uvicorn.run(
         app,
         host=host,

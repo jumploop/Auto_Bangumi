@@ -35,6 +35,8 @@ class RSSEngine(Database):
         aggregate: bool = True,
         parser: str = "mikan",
     ):
+        # 记录添加 RSS 的信息
+        logger.info(f"Adding RSS: {name}")
         if not name:
             with RequestContent() as req:
                 name = req.get_rss_title(rss_link)
@@ -62,6 +64,8 @@ class RSSEngine(Database):
             )
 
     def disable_list(self, rss_id_list: list[int]):
+        # 记录禁用 RSS 的信息
+        logger.info(f"Disabling RSS: {rss_id_list}")
         for rss_id in rss_id_list:
             self.rss.disable(rss_id)
         return ResponseModel(
@@ -72,6 +76,8 @@ class RSSEngine(Database):
         )
 
     def enable_list(self, rss_id_list: list[int]):
+        # 记录启用 RSS 的信息
+        logger.info(f"Enabling RSS: {rss_id_list}")
         for rss_id in rss_id_list:
             self.rss.enable(rss_id)
         return ResponseModel(
@@ -82,6 +88,8 @@ class RSSEngine(Database):
         )
 
     def delete_list(self, rss_id_list: list[int]):
+        # 记录删除 RSS 的信息
+        logger.info(f"Deleting RSS: {rss_id_list}")
         for rss_id in rss_id_list:
             self.rss.delete(rss_id)
         return ResponseModel(

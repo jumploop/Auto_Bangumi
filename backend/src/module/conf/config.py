@@ -45,6 +45,7 @@ class Settings(Config):
     def save(self, config_dict: dict | None = None):
         if not config_dict:
             config_dict = self.dict()
+        logger.info(f"Saving config to {CONFIG_PATH}")
         with open(CONFIG_PATH, "w", encoding="utf-8") as f:
             json.dump(config_dict, f, indent=4, ensure_ascii=False)
 

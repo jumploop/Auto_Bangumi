@@ -2,12 +2,12 @@
 
 # This script is used to run the development environment.
 
-python3 -m venv venv
+python3 -m venv .venv
 
-./venv/bin/python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements-dev.txt
+.venv/bin/python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements-dev.txt
 
 # install git-hooks for pre-commit before committing.
-./venv/bin/pre-commit install
+.venv/bin/pre-commit install
 
 cd src || exit
 
@@ -25,4 +25,7 @@ if [ ! -f "$VERSION_FILE" ]; then
 	echo "VERSION='DEV_VERSION'" >>"$VERSION_FILE"
 fi
 
-../venv/bin/uvicorn main:app --reload --port 7892
+# 读取 settings.program.webui_port 配置
+PORT=$(python3 -c "import json; print(json.load(open('config/config_dev.json'))['program']['webui_port'])")
+
+../.venv/bin/uvicorn main:app --reload --port $PORT

@@ -19,11 +19,13 @@ router = APIRouter(tags=["program"])
 
 @router.on_event("startup")
 async def startup():
+    logger.info("Starting program...")
     await program.startup()
 
 
 @router.on_event("shutdown")
 async def shutdown():
+    logger.info("Stopping program...")
     program.stop()
 
 
@@ -32,6 +34,7 @@ async def shutdown():
 )
 async def restart():
     try:
+        logger.info("Restarting program...")
         resp = await program.restart()
         return u_response(resp)
     except Exception as e:
@@ -51,6 +54,7 @@ async def restart():
 )
 async def start():
     try:
+        logger.info("Starting program...")
         resp = await program.start()
         return u_response(resp)
     except Exception as e:
@@ -69,29 +73,24 @@ async def start():
     "/stop", response_model=APIResponse, dependencies=[Depends(get_current_user)]
 )
 async def stop():
+    logger.info("Stopping program...")
     return u_response(program.stop())
 
 
 @router.get("/status", response_model=dict, dependencies=[Depends(get_current_user)])
 async def program_status():
-    if not program.is_running:
-        return {
-            "status": False,
-            "version": VERSION,
-            "first_run": program.first_run,
-        }
-    else:
-        return {
-            "status": True,
-            "version": VERSION,
-            "first_run": program.first_run,
-        }
+    return {
+        "status": program.is_running,
+        "version": VERSION,
+        "first_run": program.first_run,
+    }
 
 
 @router.get(
     "/shutdown", response_model=APIResponse, dependencies=[Depends(get_current_user)]
 )
 async def shutdown_program():
+    logger.info("Calling shutdown_program")
     program.stop()
     logger.info("Shutting down program...")
     os.kill(os.getpid(), signal.SIGINT)

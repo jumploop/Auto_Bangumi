@@ -94,10 +94,11 @@ class DownloadClient(TorrentPath):
         )
 
     def set_rules(self, bangumi_info: list[Bangumi]):
-        logger.debug("[Downloader] Start adding rules.")
+        logger.info("[Downloader] Start adding rules.")
         for info in bangumi_info:
+            logger.info(f"[Downloader] Adding rule for {info.official_title}")
             self.set_rule(info)
-        logger.debug("[Downloader] Finished.")
+        logger.info("[Downloader] Finished.")
 
     def get_torrent_info(self, category="Bangumi", status_filter="completed", tag=None):
         return self.client.torrents_info(
@@ -120,7 +121,9 @@ class DownloadClient(TorrentPath):
         with RequestContent() as req:
             if isinstance(torrent, list):
                 if len(torrent) == 0:
-                    logger.debug(f"[Downloader] No torrent found: {bangumi.official_title}")
+                    logger.debug(
+                        f"[Downloader] No torrent found: {bangumi.official_title}"
+                    )
                     return False
                 if "magnet" in torrent[0].url:
                     torrent_url = [t.url for t in torrent]
