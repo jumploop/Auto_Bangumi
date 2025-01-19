@@ -20,13 +20,13 @@ class BangumiDatabase:
             return False
         self.session.add(data)
         self.session.commit()
-        logger.info(f"[Database] Insert {data.official_title} into database.")
+        logger.debug(f"[Database] Insert {data.official_title} into database.")
         return True
 
     def add_all(self, datas: list[Bangumi]):
         self.session.add_all(datas)
         self.session.commit()
-        logger.info(f"[Database] Insert {len(datas)} bangumi into database.")
+        logger.debug(f"[Database] Insert {len(datas)} bangumi into database.")
 
     def update(self, data: Bangumi | BangumiUpdate, _id: int = None) -> bool:
         if _id and isinstance(data, BangumiUpdate):
@@ -43,13 +43,13 @@ class BangumiDatabase:
         self.session.add(db_data)
         self.session.commit()
         self.session.refresh(db_data)
-        logger.info(f"[Database] Update {data.official_title}")
+        logger.debug(f"[Database] Update {data.official_title}")
         return True
 
     def update_all(self, datas: list[Bangumi]):
         self.session.add_all(datas)
         self.session.commit()
-        logger.info(f"[Database] Update {len(datas)} bangumi.")
+        logger.debug(f"[Database] Update {len(datas)} bangumi.")
 
     def update_rss(self, title_raw, rss_set: str):
         # Update rss and added
@@ -60,7 +60,7 @@ class BangumiDatabase:
         self.session.add(bangumi)
         self.session.commit()
         self.session.refresh(bangumi)
-        logger.info(f"[Database] Update {title_raw} rss_link to {rss_set}.")
+        logger.debug(f"[Database] Update {title_raw} rss_link to {rss_set}.")
 
     def update_poster(self, title_raw, poster_link: str):
         statement = select(Bangumi).where(Bangumi.title_raw == title_raw)
@@ -69,14 +69,14 @@ class BangumiDatabase:
         self.session.add(bangumi)
         self.session.commit()
         self.session.refresh(bangumi)
-        logger.info(f"[Database] Update {title_raw} poster_link to {poster_link}.")
+        logger.debug(f"[Database] Update {title_raw} poster_link to {poster_link}.")
 
     def delete_one(self, _id: int):
         statement = select(Bangumi).where(Bangumi.id == _id)
         bangumi = self.session.exec(statement).first()
         self.session.delete(bangumi)
         self.session.commit()
-        logger.info(f"[Database] Delete bangumi id: {_id}.")
+        logger.debug(f"[Database] Delete bangumi id: {_id}.")
 
     def delete_all(self):
         statement = delete(Bangumi)
@@ -94,7 +94,7 @@ class BangumiDatabase:
             logger.warning(f"[Database] Cannot find bangumi id: {_id}.")
             return None
         else:
-            logger.info(f"[Database] Find bangumi id: {_id}.")
+            logger.debug(f"[Database] Find bangumi id: {_id}.")
             return self.session.exec(statement).first()
 
     def match_poster(self, bangumi_name: str) -> str:
@@ -114,7 +114,6 @@ class BangumiDatabase:
         while i < len(torrent_list):
             torrent = torrent_list[i]
             for match_data in match_datas:
-                logger.info(f"[Database] Match {torrent.name} with {match_data.title_raw}")
                 if match_data.title_raw in torrent.name:
                     if rss_link not in match_data.rss_link:
                         match_data.rss_link += f",{rss_link}"
@@ -162,7 +161,7 @@ class BangumiDatabase:
         self.session.add(bangumi)
         self.session.commit()
         self.session.refresh(bangumi)
-        logger.info(f"[Database] Disable rule {bangumi.title_raw}.")
+        logger.debug(f"[Database] Disable rule {bangumi.title_raw}.")
 
     def search_rss(self, rss_link: str) -> list[Bangumi]:
         statement = select(Bangumi).where(func.instr(rss_link, Bangumi.rss_link) > 0)

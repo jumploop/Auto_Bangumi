@@ -45,9 +45,7 @@ class RSSAnalyser(TitleParser):
         logger.info(f"[RSS] Parsing RSS: {rss.url}, full_parse: {full_parse}")
         new_data = []
         for torrent in torrents:
-            logger.info(f"[RSS] Analysing torrent: {torrent.name}")
             bangumi = self.raw_parser(raw=torrent.name)
-            logger.info(f"[RSS] Torrent: {torrent.name} -> Bangumi: {bangumi}")
             if bangumi and bangumi.title_raw not in [i.title_raw for i in new_data]:
                 self.official_title_parser(bangumi=bangumi, rss=rss, torrent=torrent)
                 if not full_parse:
@@ -93,13 +91,8 @@ class RSSAnalyser(TitleParser):
                 msg_zh="无法找到种子。",
             )
         for torrent in torrents:
-            logger.info(f"[RSS] Analysing torrent: {torrent.name}")
             data = self.torrent_to_data(torrent, rss)
-            logger.info(
-                f"[RSS] Torrent: {torrent.name} -> Bangumi: {data.official_title}"
-            )
             if data:
-                logger.info(f"[RSS] New bangumi founded: {data}")
                 return data
         return ResponseModel(
             status=False,
