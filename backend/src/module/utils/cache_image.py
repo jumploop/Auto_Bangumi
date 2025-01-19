@@ -2,7 +2,7 @@ import hashlib
 
 
 def save_image(img, suffix):
-    img_hash = hashlib.md5(img).hexdigest()[0:8]
+    img_hash = hashlib.md5(img).hexdigest()[:8]
     image_path = f"data/posters/{img_hash}.{suffix}"
     with open(image_path, "wb") as f:
         f.write(img)

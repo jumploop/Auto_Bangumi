@@ -49,7 +49,6 @@ def get_season_and_title(season_and_title) -> tuple[str, int]:
         season = re.search(r"([Ss]|Season )(\d{1,3})", season_and_title, re.I).group(2)
     except AttributeError:
         season = 1
-    logger.info(f"title: {title}, season: {season}")
     return title, season
 
 
@@ -71,7 +70,6 @@ def torrent_parser(
     if torrent_name is None:
         match_names = match_names[1:]
     for match_name in match_names:
-        logger.info(f"match_name: {match_name}")
         for rule in RULES:
             match_obj = re.match(rule, match_name, re.I)
             if match_obj:

@@ -155,6 +155,7 @@ class TorrentManager(Database):
     def search_all_bangumi(self):
         datas = self.bangumi.search_all()
         return [data for data in datas if not data.deleted] if datas else []
+
     def search_one(self, _id: int | str):
         data = self.bangumi.search_id(int(_id))
         if data:
@@ -166,7 +167,6 @@ class TorrentManager(Database):
             msg_en=f"Can't find data with {_id}",
             msg_zh=f"无法找到 id {_id} 的数据",
         )
-    
 
 
 if __name__ == "__main__":

@@ -16,10 +16,10 @@ class RSSDatabase:
         statement = select(RSSItem).where(RSSItem.url == data.url)
         db_data = self.session.exec(statement).first()
         if db_data:
-            logger.info(f"RSS Item {data.url} already exists.")
+            logger.debug(f"RSS Item {data.url} already exists.")
             return False
         else:
-            logger.info(f"RSS Item {data.url} not exists, adding...")
+            logger.debug(f"RSS Item {data.url} not exists, adding...")
             self.session.add(data)
             self.session.commit()
             self.session.refresh(data)
