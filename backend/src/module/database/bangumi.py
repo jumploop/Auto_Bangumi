@@ -22,13 +22,17 @@ class BangumiDatabase:
         return True
 
     def add_all(self, datas: list[Bangumi]) -> None:
-        added_count = 0
-        for data in datas:
-            if not self.session.exec(select(Bangumi).where(Bangumi.title_raw == data.title_raw)).first():
-                self.session.add(data)
-                added_count += 1
-        self.session.commit()
-        logger.debug(f"[Database] Insert {added_count} bangumi into database.")
+        # 一次查询获取所有现有标题
+        existing_titles = {
+            result[0] for result in
+            self.session.exec(select(Bangumi.title_raw)).all()
+        }
+        if new_records := [
+            data for data in datas if data.title_raw not in existing_titles
+        ]:
+            self.session.add_all(new_records)
+            self.session.commit()
+            logger.debug(f"[数据库] 插入 {len(new_records)} 个番组到数据库。")
 
     def update(self, data: Bangumi | BangumiUpdate, _id: int = None) -> bool:
         if _id and isinstance(data, BangumiUpdate):
@@ -55,13 +59,15 @@ class BangumiDatabase:
     def update_rss(self, title_raw, rss_set: str) -> None:
         # Update rss and added
         bangumi = self.session.exec(select(Bangumi).where(Bangumi.title_raw == title_raw)).first()
-        if bangumi:
-            bangumi.rss_link = rss_set
-            bangumi.added = False
-            self.session.add(bangumi)
-            self.session.commit()
-            self.session.refresh(bangumi)
-            logger.debug(f"[Database] Update {title_raw} rss_link to {rss_set}.")
+        if not bangumi:
+            logger.warning(f"[Database] Update RSS 失败：未找到标题为 '{title_raw}' 的番组")
+            return
+        bangumi.rss_link = rss_set
+        bangumi.added = False
+        self.session.add(bangumi)
+        self.session.commit()
+        self.session.refresh(bangumi)
+        logger.debug(f"[Database] Update {title_raw} rss_link to {rss_set}.")
 
     def update_poster(self, title_raw, poster_link: str) -> None:
         bangumi = self.session.exec(select(Bangumi).where(Bangumi.title_raw == title_raw)).first()
