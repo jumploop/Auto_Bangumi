@@ -115,7 +115,6 @@ class BangumiDatabase:
         while i < len(torrent_list):
             torrent = torrent_list[i]
             for match_data in match_datas:
-                logger.info("torrent_name: %s---> title_raw: %s", torrent.name, match_data.title_raw)
                 if match_data.title_raw in torrent.name:
                     if rss_link not in match_data.rss_link:
                         match_data.rss_link += f",{rss_link}"
