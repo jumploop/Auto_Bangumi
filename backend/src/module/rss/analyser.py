@@ -40,9 +40,9 @@ class RSSAnalyser(TitleParser):
         return rss_torrents
 
     def torrents_to_data(
-        self, torrents: list[Torrent], rss: RSSItem, full_parse: bool = True
+            self, torrents: list[Torrent], rss: RSSItem, full_parse: bool = True
     ) -> list:
-        logger.info(f"[RSS] Parsing RSS: {rss.url}, full_parse: {full_parse}")
+        logger.info(f"[RSS] Parsing RSS: {rss.url}")
         new_data = []
         for torrent in torrents:
             bangumi = self.raw_parser(raw=torrent.name)
@@ -62,7 +62,7 @@ class RSSAnalyser(TitleParser):
             return bangumi
 
     def rss_to_data(
-        self, rss: RSSItem, engine: RSSEngine, full_parse: bool = True
+            self, rss: RSSItem, engine: RSSEngine, full_parse: bool = True
     ) -> list[Bangumi]:
         rss_torrents = self.get_rss_torrents(rss.url, full_parse)
         logger.info(f"[RSS] {len(rss_torrents)} torrents found.")
