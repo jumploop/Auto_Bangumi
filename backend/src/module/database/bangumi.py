@@ -22,17 +22,8 @@ class BangumiDatabase:
         return True
 
     def add_all(self, datas: list[Bangumi]) -> None:
-        # 一次查询获取所有现有标题
-        existing_titles = {
-            result[0] for result in
-            self.session.exec(select(Bangumi.title_raw)).all()
-        }
-        if new_records := [
-            data for data in datas if data.title_raw not in existing_titles
-        ]:
-            self.session.add_all(new_records)
-            self.session.commit()
-            logger.debug(f"[数据库] 插入 {len(new_records)} 个番组到数据库。")
+        added_count = sum(1 for data in datas if self.add(data))
+        logger.debug(f"[Database] Insert {added_count} bangumi into database.")
 
     def update(self, data: Bangumi | BangumiUpdate, _id: int = None) -> bool:
         if _id and isinstance(data, BangumiUpdate):
