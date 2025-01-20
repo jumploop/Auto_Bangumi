@@ -29,43 +29,31 @@ uvicorn_logging_config = {
 
 def create_app() -> FastAPI:
     app = FastAPI()
-
-    # mount routers
     app.include_router(v1, prefix="/api")
+    if VERSION != "DEV_VERSION":
+        app.mount("/assets", StaticFiles(directory="dist/assets"), name="assets")
+        app.mount("/images", StaticFiles(directory="dist/images"), name="images")
+        templates = Jinja2Templates(directory="dist")
+
+        @app.get("/{path:path}")
+        async def html(request: Request, path: str):
+            file_path = Path("dist") / path
+            if file_path.is_file():
+                return FileResponse(file_path)
+            return templates.TemplateResponse("index.html", {"request": request})
+    else:
+        @app.get("/", status_code=302, tags=["html"])
+        async def index():
+            return RedirectResponse("/docs")
+
+    @app.get("/posters/{path:path}", tags=["posters"])
+    async def posters(path: str):
+        return FileResponse(f"data/posters/{path}")
 
     return app
 
 
 app = create_app()
-
-
-@app.get("/posters/{path:path}", tags=["posters"])
-def posters(path: str):
-    return FileResponse(f"data/posters/{path}")
-
-
-if VERSION != "DEV_VERSION":
-    app.mount("/assets", StaticFiles(directory="dist/assets"), name="assets")
-    app.mount("/images", StaticFiles(directory="dist/images"), name="images")
-    # app.mount("/icons", StaticFiles(directory="dist/icons"), name="icons")
-    templates = Jinja2Templates(directory="dist")
-
-    @app.get("/{path:path}")
-    def html(request: Request, path: str):
-        # 尝试直接返回文件
-        file_path = Path("dist") / path
-        if file_path.is_file():
-            return FileResponse(file_path)
-        # 如果文件不存在，返回 index.html
-        context = {"request": request}
-        return templates.TemplateResponse("index.html", context)
-
-else:
-
-    @app.get("/", status_code=302, tags=["html"])
-    def index():
-        return RedirectResponse("/docs")
-
 
 if __name__ == "__main__":
     host = "::" if os.getenv("IPV6") else os.getenv("HOST", "0.0.0.0")
