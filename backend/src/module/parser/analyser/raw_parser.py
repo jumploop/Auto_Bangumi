@@ -7,8 +7,11 @@ from module.models import Episode
 logger = logging.getLogger(__name__)
 
 EPISODE_RE = re.compile(r"\d+")
-TITLE_RE = re.compile(
+TITLE_REG = re.compile(
     r"(.*?|\[.*])((?: -)? \d+ |\[\d+]|\[\d+.?[vV]\d]|第\d+[话話集]|\[第?\d+[话話集]]|\[\d+.?END]|[Ee][Pp]?\d+)(.*)"
+)
+TITLE_RE = re.compile(
+    r"(.*|\[.*])( -? \d+|\[\d+]|\[\d+.?[vV]\d]|第\d+[话話集]|\[第?\d+[话話集]]|\[\d+.?END]|[Ee][Pp]?\d+)(.*)"
 )
 RESOLUTION_RE = re.compile(r"1080|720|2160|4K")
 SOURCE_RE = re.compile(r"B-Global|[Bb]aha|[Bb]ilibili|AT-X|Web")
@@ -135,7 +138,7 @@ def process(raw_title: str):
     # 预处理标题
     group = get_group(content_title)
     # 翻译组的名字
-    match_obj = TITLE_RE.match(content_title)
+    match_obj = TITLE_RE.match(content_title) or TITLE_REG.match(content_title)
     # 处理标题
     season_info, episode_info, other = list(
         map(lambda x: x.strip(), match_obj.groups())
