@@ -4,9 +4,7 @@ from typing import Optional, List
 from sqlalchemy.sql import func
 from sqlmodel import Session, and_, delete, false, or_, select
 
-from module.models import Bangumi, BangumiUpdate
-
-from backend.src.module.models import Torrent
+from module.models import Bangumi, BangumiUpdate, Torrent
 
 logger = logging.getLogger(__name__)
 
