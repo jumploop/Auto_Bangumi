@@ -9,7 +9,7 @@ LOG_PATH = LOG_ROOT / "log.txt"
 
 def setup_logger(level: int = logging.INFO, reset: bool = False):
     level = logging.DEBUG if settings.log.debug_enable else level
-    LOG_ROOT.mkdir(exist_ok=True)
+    LOG_ROOT.mkdir(parents=True, exist_ok=True)
 
     if reset and LOG_PATH.exists():
         LOG_PATH.unlink(missing_ok=True)
