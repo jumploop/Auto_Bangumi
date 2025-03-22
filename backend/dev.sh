@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail  # 严格错误检查
 
 # This script is used to run the development environment.
 
