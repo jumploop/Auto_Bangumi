@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 EPISODE_RE = re.compile(r"\d+")
 TITLE_RE = re.compile(
-    r"(.*|\[.*])( -? \d+|\[\d+]|\[\d+.?[vV]\d]|第\d+[话話集]|\[第?\d+[话話集]]|\[\d+.?END]|[Ee][Pp]?\d+)(.*)"
+    r"(.*?|\[.*])((?: -)? \d+ |\[\d+]|\[\d+.?[vV]\d]|第\d+[话話集]|\[第?\d+\.?\d*[话話集]]|\[\d+.?END]|[Ee][Pp]?\d+)(.*)"
 )
 RESOLUTION_RE = re.compile(r"1080|720|2160|4K")
 SOURCE_RE = re.compile(r"B-Global|[Bb]aha|[Bb]ilibili|AT-X|Web")
@@ -125,9 +125,7 @@ def find_tags(other):
 
 
 def clean_sub(sub: str | None) -> str | None:
-    if sub is None:
-        return sub
-    return re.sub(r"_MP4|_MKV", "", sub)
+    return sub if sub is None else re.sub(r"_MP4|_MKV", "", sub)
 
 
 def process(raw_title: str):

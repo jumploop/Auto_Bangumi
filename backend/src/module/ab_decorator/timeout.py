@@ -1,11 +1,11 @@
 import signal
-
+from functools import wraps
 
 def timeout(seconds):
     def decorator(func):
         def handler(signum, frame):
             raise TimeoutError("Function timed out.")
-
+        @wraps(func)
         def wrapper(*args, **kwargs):
             # 设置信号处理程序，当超时时触发TimeoutError异常
             signal.signal(signal.SIGALRM, handler)

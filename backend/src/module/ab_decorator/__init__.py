@@ -1,6 +1,7 @@
 import logging
 import threading
 import time
+from functools import wraps
 
 from .timeout import timeout
 
@@ -9,6 +10,7 @@ lock = threading.Lock()
 
 
 def qb_connect_failed_wait(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         times = 0
         while times < 5:
@@ -25,6 +27,7 @@ def qb_connect_failed_wait(func):
 
 
 def api_failed(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
@@ -37,6 +40,7 @@ def api_failed(func):
 
 
 def locked(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         with lock:
             return func(*args, **kwargs)

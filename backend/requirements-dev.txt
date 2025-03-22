@@ -1,5 +1,6 @@
 -r requirements.txt
 ruff
-black
-pre-commit
-pytest
+ruff>=0.4.3
+black>=24.4.2
+pre-commit>=3.6.1
+pytest>=8.1.1

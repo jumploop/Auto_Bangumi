@@ -128,13 +128,12 @@ class DownloadClient(TorrentPath):
                 else:
                     torrent_file = [req.get_content(t.url) for t in torrent]
                     torrent_url = None
+            elif "magnet" in torrent.url:
+                torrent_url = torrent.url
+                torrent_file = None
             else:
-                if "magnet" in torrent.url:
-                    torrent_url = torrent.url
-                    torrent_file = None
-                else:
-                    torrent_file = req.get_content(torrent.url)
-                    torrent_url = None
+                torrent_file = req.get_content(torrent.url)
+                torrent_url = None
         if self.client.add_torrents(
             torrent_urls=torrent_url,
             torrent_files=torrent_file,
