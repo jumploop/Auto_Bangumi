@@ -24,8 +24,9 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=1440)
-    to_encode["exp"] = expire
-    return jwt.encode(to_encode, app_pwd_key, algorithm=app_pwd_algorithm)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, app_pwd_key, algorithm=app_pwd_algorithm)
+    return encoded_jwt
 
 
 # 解码 Token
@@ -33,7 +34,9 @@ def decode_token(token: str):
     try:
         payload = jwt.decode(token, app_pwd_key, algorithms=[app_pwd_algorithm])
         username = payload.get("sub")
-        return None if username is None else payload
+        if username is None:
+            return None
+        return payload
     except JWTError:
         return None
 

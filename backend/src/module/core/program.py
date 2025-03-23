@@ -62,9 +62,7 @@ class Program(RenameThread, RSSThread):
         self.stop_event.clear()
         settings.load()
         if not self.downloader_status:
-            logger.warning(
-                "Unable to connect to the downloader, some features may not be available until connected."
-            )
+            logger.warning("Unable to connect to the downloader, some features may not be available until connected.")
         if self.enable_renamer:
             self.rename_start()
         if self.enable_rss:
@@ -88,7 +86,8 @@ class Program(RenameThread, RSSThread):
                 msg_en="Program stopped.",
                 msg_zh="程序停止成功。",
             )
-        return ResponseModel(
+        else:
+            return ResponseModel(
                 status=False,
                 status_code=406,
                 msg_en="Program is not running.",
@@ -108,5 +107,6 @@ class Program(RenameThread, RSSThread):
     def update_database(self):
         if not self.version_update:
             return {"status": "No update found."}
-        start_up()
-        return {"status": "Database updated."}
+        else:
+            start_up()
+            return {"status": "Database updated."}

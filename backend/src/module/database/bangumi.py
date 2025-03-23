@@ -23,10 +23,10 @@ class BangumiDatabase:
         logger.debug(f"[Database] Insert {data.official_title} into database.")
         return True
 
-    def add_all(self, datas: list[Bangumi]) -> None:
-        added_count = sum(bool(self.add(data))
-                          for data in datas)
-        logger.debug(f"[Database] Insert {added_count} bangumi into database.")
+    def add_all(self, datas: list[Bangumi]):
+        self.session.add_all(datas)
+        self.session.commit()
+        logger.debug(f"[Database] Insert {len(datas)} bangumi into database.")
 
     def update(self, data: Bangumi | BangumiUpdate, _id: int = None) -> bool:
         if _id and isinstance(data, BangumiUpdate):
@@ -37,7 +37,8 @@ class BangumiDatabase:
             return False
         if not db_data:
             return False
-        for key, value in data.dict(exclude_unset=True).items():
+        bangumi_data = data.dict(exclude_unset=True)
+        for key, value in bangumi_data.items():
             setattr(db_data, key, value)
         self.session.add(db_data)
         self.session.commit()
