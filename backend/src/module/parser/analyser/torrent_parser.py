@@ -38,18 +38,21 @@ def get_group(group_and_title) -> tuple[str | None, str]:
     n = re.split(r"[\[\]()【】（）]", group_and_title)
     while "" in n:
         n.remove("")
-    if len(n) <= 1:
+    if len(n) > 1:
+        if re.match(r"\d+", n[1]):
+            return None, group_and_title
+        return n[0], n[1]
+    else:
         return None, n[0]
-    return (None, group_and_title) if re.match(r"\d+", n[1]) else (n[0], n[1])
 
 
 def get_season_and_title(season_and_title) -> tuple[str, int]:
     title = re.sub(r"([Ss]|Season )\d{1,3}", "", season_and_title).strip()
     try:
-        season = int(re.search(r"([Ss]|Season )(\d{1,3})", season_and_title, re.I).group(2))
+        season = re.search(r"([Ss]|Season )(\d{1,3})", season_and_title, re.I).group(2)
     except AttributeError:
         season = 1
-    return title, season
+    return title, int(season)
 
 
 def get_subtitle_lang(subtitle_name: str) -> str:
