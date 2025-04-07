@@ -1,13 +1,13 @@
 import logging
 import re
 
-from module.models import Episode
+# from module.models import Episode
 
 logger = logging.getLogger(__name__)
 
 EPISODE_RE = re.compile(r"\d+")
 TITLE_RE = re.compile(
-    r"(.*?|\[.*?])((?: -)?\d+|\[\d+]|\[\d+.?[vV]\d]|第\d+[话話集]|\[第?\d+[话話集]]|\[\d+.?END]|[Ee][Pp]?\d+)(.*)"
+    r"(.*?|\[.*?])(\d+|\[\d+]|\[\d+.?[vV]\d]|第\d+[话話集]|\[第?\d+[话話集]]|\[\d+.?END]|[Ee][Pp]?\d+)(.*)"
 )
 RESOLUTION_RE = re.compile(r"1080|720|2160|4K")
 SOURCE_RE = re.compile(r"B-Global|[Bb]aha|[Bb]ilibili|AT-X|Web")
@@ -171,15 +171,15 @@ def process(raw_title: str):
     )
 
 
-def raw_parser(raw: str) -> Episode | None:
+def raw_parser(raw: str):  # -> Episode | None:
     ret = process(raw)
     if ret is None:
         logger.error(f"Parser cannot analyse {raw}")
         return None
     name_en, name_zh, name_jp, season, sr, episode, sub, dpi, source, group = ret
-    return Episode(
-        name_en, name_zh, name_jp, season, sr, episode, sub, group, dpi, source
-    )
+    # return Episode(
+    #     name_en, name_zh, name_jp, season, sr, episode, sub, group, dpi, source
+    # )
 
 
 if __name__ == "__main__":
