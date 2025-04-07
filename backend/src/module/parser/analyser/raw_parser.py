@@ -1,7 +1,7 @@
 import logging
 import re
 
-# from module.models import Episode
+from module.models import Episode
 
 logger = logging.getLogger(__name__)
 
@@ -171,15 +171,15 @@ def process(raw_title: str):
     )
 
 
-def raw_parser(raw: str):  # -> Episode | None:
+def raw_parser(raw: str) -> Episode | None:
     ret = process(raw)
     if ret is None:
         logger.error(f"Parser cannot analyse {raw}")
         return None
     name_en, name_zh, name_jp, season, sr, episode, sub, dpi, source, group = ret
-    # return Episode(
-    #     name_en, name_zh, name_jp, season, sr, episode, sub, group, dpi, source
-    # )
+    return Episode(
+        name_en, name_zh, name_jp, season, sr, episode, sub, group, dpi, source
+    )
 
 
 if __name__ == "__main__":
